@@ -1,7 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:freemusic_flutter/dataManager.dart';
 import 'package:freemusic_flutter/drawer.dart';
+import 'package:freemusic_flutter/myList.dart';
 import 'package:freemusic_flutter/play.dart';
 import 'package:freemusic_flutter/search.dart';
 import 'package:freemusic_flutter/textButton.dart';
@@ -56,6 +58,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Map<String, String> _musicListMap = {};
 
+  TextEditingController _editingController = TextEditingController();
+
+  List _musicTableList = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    queryAllTable();
+  }
+
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -64,6 +77,71 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
     });
+  }
+
+  void createNewList(String name) {
+    DataManager().createTableWithName(name);
+    queryAllTable();
+  }
+
+  void queryAllTable() async {
+    var list = await DataManager().queryAllTableFromDB();
+    _musicTableList = [];
+    for (var map in list) {
+      if (map["name"] != "sqlite_sequence") {
+        _musicTableList.add(map);
+      }
+    }
+    setState(() {});
+  }
+
+  Future<bool> _showAlert() {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('新建歌单'),
+            content: Container(
+              height: 40,
+              width: 150,
+              child: TextField(
+                style: TextStyle(
+                  fontSize: 14,
+                ),
+                autofocus: true,
+                controller: _editingController,
+                decoration: InputDecoration(
+                    contentPadding: EdgeInsets.zero,
+                    hintText: "输入歌单名字",
+                    prefixIcon: Icon(Icons.search),
+                    disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                        borderSide: BorderSide(color: Colors.grey)),
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                        borderSide: BorderSide(color: Colors.grey)),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                        borderSide: BorderSide(color: Colors.grey))),
+                maxLines: 1,
+                onSubmitted: createNewList,
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('取消')),
+              TextButton(
+                  onPressed: () {
+                    createNewList(_editingController.text);
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('确定'))
+            ],
+          );
+        });
   }
 
   @override
@@ -109,17 +187,35 @@ class _MyHomePageState extends State<MyHomePage> {
         child: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3, childAspectRatio: 1.0),
-          itemCount: _musicListMap.values.length + 1,
+          itemCount: _musicTableList.length + 1,
           itemBuilder: (context, index) {
             if (index == 0) {
-              return TextButtonTopImage(
-                buttonTitle: '新建歌单',
-                buttonImage: 'images/music.png',
-              );
+              return new GestureDetector(
+                  onTap: () {
+                    print('点击新建歌单');
+                    _showAlert();
+                  },
+                  child: new Container(
+                    alignment: Alignment.center,
+                    child: new TextButtonTopImage(
+                      buttonTitle: '新建歌单',
+                      buttonImage: 'images/music.png',
+                    ),
+                  ));
             }
-            return TextButtonTopImage(
-                buttonTitle: _musicListMap['listTitle'],
-                buttonImage: _musicListMap['listImage']);
+            return new GestureDetector(
+              onTap: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return MyList(listName: _musicTableList[index - 1]['name']);
+                }));
+              },
+              child: new Container(
+                child: TextButtonTopImage(
+                    buttonTitle: _musicTableList[index - 1]['name'],
+                    buttonImage: 'images/music.png'),
+              ),
+            );
           },
         ),
       ),

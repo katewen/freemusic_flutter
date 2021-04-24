@@ -8,12 +8,12 @@ class NetworkManager {
   // ignore: close_sinks
   HttpClientRequest request;
 
-  Future<List> requestListWithName(String musicName) async {
+  Future<List> requestListWithName(String musicName, int page) async {
     Uri url = Uri.http('y.webzcz.cn', '/api.php', {
       "types": "search",
       "count": "20",
       "source": "netease",
-      "pages": "1",
+      "pages": page.toString(),
       "name": musicName
     });
     request = await httpClient.getUrl(url);
@@ -25,7 +25,7 @@ class NetworkManager {
 
   Future<String> requestMusicUrlWithId(int musicId) async {
     Uri url = Uri.http('y.webzcz.cn', '/api.php',
-        {"types": "url", "source": "netease", "id": musicId});
+        {"types": "url", "source": "netease", "id": musicId.toString()});
     request = await httpClient.getUrl(url);
     HttpClientResponse response = await request.close();
     String dataString = await response.transform(utf8.decoder).join();
