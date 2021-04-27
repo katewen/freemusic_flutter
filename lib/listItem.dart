@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:freemusic_flutter/musicModel.dart';
 import 'package:freemusic_flutter/networkManager.dart';
+import 'package:freemusic_flutter/play.dart';
 import 'package:freemusic_flutter/playManager.dart';
 
 class ListItem extends StatelessWidget {
@@ -47,6 +48,8 @@ class ListItem extends StatelessWidget {
               String musicUrl =
                   await NetworkManager().requestMusicUrlWithId(model.id);
               PlayerManger().reloadPlayDataWithUrl(musicUrl);
+              sharedPlay.musicList = [model];
+              sharedPlay.model = model;
             },
           ),
           GestureDetector(

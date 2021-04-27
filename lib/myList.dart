@@ -61,6 +61,8 @@ class MyListState extends State<MyList> {
                       String musicUrl = await NetworkManager()
                           .requestMusicUrlWithId(musicList[index].id);
                       PlayerManger().reloadPlayDataWithUrl(musicUrl);
+                      PlayerManger().playMusicList = musicList;
+                      PlayerManger().playingIndex = index;
                     },
                   ));
             },
