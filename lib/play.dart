@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:freemusic_flutter/musicModel.dart';
+import 'package:freemusic_flutter/networkManager.dart';
 
 PlayWidget sharedPlay = PlayWidget();
 
@@ -17,27 +18,14 @@ class _PlayWidgetState extends State<PlayWidget> {
   String artistStr = '';
   List musicList = sharedPlay.musicList;
   MusicModel model = sharedPlay.model;
+  String picUrl = '';
 
-  // factory _PlayWidgetState() => _getInstance();
-
-  // static _PlayWidgetState get instance => _getInstance();
-
-  // _PlayWidgetState.internal();
-
-  // static _PlayWidgetState _instance;
-
-  // static _PlayWidgetState _getInstance() {
-  //   if (_instance == null) {
-  //     _instance = _PlayWidgetState.internal();
-  //   }
-  //   return _instance;
-  // }
-  //
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     if (model != null) {
+      getPicUrl();
       for (var artist in model.artist) {
         artistStr = artistStr + artist + ',';
       }
@@ -48,6 +36,12 @@ class _PlayWidgetState extends State<PlayWidget> {
     if (artistStr == null) {
       artistStr = '';
     }
+  }
+
+  void getPicUrl() async {
+    picUrl =
+        await NetworkManager().requestPicUrlWithId(int.parse(model.pic_id));
+    setState(() {});
   }
 
   @override
@@ -82,7 +76,9 @@ class _PlayWidgetState extends State<PlayWidget> {
                 borderRadius: BorderRadius.circular(150),
                 color: Colors.black,
               ),
-              child: Image.asset('images/music.png'),
+              child: picUrl == ''
+                  ? Image.asset('images/music.png')
+                  : Image.network(picUrl),
             ),
             height: 300,
             width: 300,

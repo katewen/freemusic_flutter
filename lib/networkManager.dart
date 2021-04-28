@@ -35,7 +35,7 @@ class NetworkManager {
 
   Future<String> requestPicUrlWithId(int picId) async {
     Uri url = Uri.http('y.webzcz.cn', '/api.php',
-        {"types": "pic", "source": "netease", "id": picId});
+        {"types": "pic", "source": "netease", "id": picId.toString()});
     request = await httpClient.getUrl(url);
     HttpClientResponse response = await request.close();
     String dataString = await response.transform(utf8.decoder).join();
