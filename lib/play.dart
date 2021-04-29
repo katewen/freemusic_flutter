@@ -70,6 +70,30 @@ class _PlayWidgetState extends State<PlayWidget> {
     return '${parts[1]}:${minteStr}';
   }
 
+  void playCrycle() {}
+
+  void playPrevious() {
+    PlayerManger().playPrevious();
+    refreshState();
+  }
+
+  void playPauseAndPlay() {
+    PlayerManger().playAndPause();
+    refreshState();
+  }
+
+  void playNex() {
+    PlayerManger().playNext();
+    refreshState();
+  }
+
+  void playMusicList() {}
+
+  void refreshState() {
+    model = PlayerManger().playMusicList[PlayerManger().playingIndex];
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -144,23 +168,26 @@ class _PlayWidgetState extends State<PlayWidget> {
             height: 100,
             child: Row(
               children: [
-                Text('循环'),
+                TextButton(onPressed: playCrycle, child: Text('循环')),
                 SizedBox(
                   width: 30,
                 ),
-                Text('上一个'),
+                TextButton(onPressed: playPrevious, child: Text('上一个')),
                 SizedBox(
                   width: 30,
                 ),
-                Text('播放'),
+                TextButton(onPressed: playPauseAndPlay, child: Text('播放')),
                 SizedBox(
                   width: 30,
                 ),
-                Text('下一个'),
+                TextButton(
+                  onPressed: playNex,
+                  child: Text('下一个'),
+                ),
                 SizedBox(
                   width: 30,
                 ),
-                Text('列表')
+                TextButton(onPressed: playMusicList, child: Text('列表'))
               ],
             ),
             bottom: 20,
