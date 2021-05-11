@@ -6,6 +6,8 @@ import 'package:freemusic_flutter/listItem.dart';
 import 'package:freemusic_flutter/musicModel.dart';
 import 'package:freemusic_flutter/playManager.dart';
 import 'networkManager.dart';
+import 'package:freemusic_flutter/play.dart';
+import 'package:freemusic_flutter/playManager.dart';
 
 class MyList extends StatefulWidget {
   MyList({Key key, this.listName}) : super(key: key);
@@ -63,6 +65,8 @@ class MyListState extends State<MyList> {
                       PlayerManger().reloadPlayDataWithUrl(musicUrl);
                       PlayerManger().playMusicList = musicList;
                       PlayerManger().playingIndex = index;
+                      sharedPlay.musicList = musicList;
+                      sharedPlay.model = musicList[index];
                     },
                   ));
             },

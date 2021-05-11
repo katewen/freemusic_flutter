@@ -30,6 +30,7 @@ class PlayerManger {
     } else {
       playingIndex++;
     }
+    reloadPlayDataWithIndex();
   }
 
   void playPrevious() {
@@ -38,6 +39,7 @@ class PlayerManger {
     } else {
       playingIndex--;
     }
+    reloadPlayDataWithIndex();
   }
 
   void play() {

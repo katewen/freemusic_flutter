@@ -47,7 +47,11 @@ class _PlayWidgetState extends State<PlayWidget> {
     PlayerManger().player.onAudioPositionChanged.listen((event) {
       musicCurrentTime = transformToTime(event.inMilliseconds);
       currentTime = event.inMilliseconds;
+
       setState(() {});
+    });
+    PlayerManger().player.onPlayerCompletion.listen((event) {
+      playNex();
     });
   }
 
@@ -157,9 +161,7 @@ class _PlayWidgetState extends State<PlayWidget> {
           ),
           Positioned(
               child: Text(
-                PlayerManger().player.state == AudioPlayerState.PLAYING
-                    ? musicTotalTime
-                    : '00:00',
+                musicTotalTime,
                 textDirection: TextDirection.rtl,
               ),
               right: 10,
