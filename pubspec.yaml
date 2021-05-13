@@ -54,6 +54,13 @@ flutter:
     - images/list_add.png
     - images/list_play.png
     - images/list_download.png
+    - images/play_list.png
+    - images/play_previous.png
+    - images/play_next.png
+    - images/play_play.png
+    - images/play_pause.png
+    
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

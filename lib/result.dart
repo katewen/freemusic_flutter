@@ -82,8 +82,10 @@ class _SearchResultState extends State<SearchResult> {
             child: child,
           );
         });
-    DataManager().insertModelToTable(
-        resultList[musicIndex], musicList[selectIndex]['name']);
+    if (selectIndex != null) {
+      DataManager().insertModelToTable(
+          resultList[musicIndex], musicList[selectIndex]['name']);
+    }
   }
 
   @override

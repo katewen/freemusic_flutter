@@ -38,13 +38,13 @@ class _PlayWidgetState extends State<PlayWidget> {
   }
 
   void refreshMusicInfo() {
-    artistStr = "";
-    musicName = "";
     model = PlayerManger().isPlaying
         ? PlayerManger().playMusicList[PlayerManger().playingIndex]
         : null;
     if (model != null) {
       getPicUrl();
+      artistStr = "";
+      musicName = "";
       for (var artist in model.artist) {
         artistStr = artistStr + artist + ',';
       }
@@ -101,7 +101,67 @@ class _PlayWidgetState extends State<PlayWidget> {
     refreshState();
   }
 
-  void playMusicList() {}
+  void playMusicList() async {
+    int selectIndex = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            child: Column(
+              children: [
+                Align(
+                  child: ListTile(
+                    title: Text("播放列表"),
+                    trailing: TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          '关闭',
+                          style: TextStyle(color: Colors.grey),
+                        )),
+                  ),
+                  alignment: Alignment.bottomCenter,
+                ),
+                Expanded(
+                    child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    MusicModel currentModel =
+                        PlayerManger().playMusicList[index];
+                    String currentArtists = '';
+                    String currentMusicName = '';
+                    for (var artist in currentModel.artist) {
+                      currentArtists = currentArtists + artist + '、';
+                    }
+                    currentArtists = currentArtists.replaceRange(
+                        currentArtists.length - 1, currentArtists.length, '');
+                    currentMusicName = currentModel.name;
+                    return Align(
+                      child: ListTile(
+                        title: Text(
+                          currentMusicName + ' - ' + currentArtists,
+                          textAlign: TextAlign.left,
+                        ),
+                        trailing: index == PlayerManger().playingIndex
+                            ? Image.asset('images/list_play.png')
+                            : null,
+                      ),
+                    );
+                  },
+                  itemCount: PlayerManger().playMusicList.length,
+                ))
+              ],
+            ),
+          );
+        }),
+
+    if ((selectIndex != null) and (selectIndex != PlayerManger().playingIndex)) {
+      String musicUrl = await NetworkManager()
+                          .requestMusicUrlWithId(PlayerManger().playMusicList[selectIndex]);
+      PlayerManger().reloadPlayDataWithUrl(musicUrl);
+      PlayerManger().playingIndex = selectIndex;
+    }
+
+  }
 
   void refreshState() {
     refreshMusicInfo();
@@ -180,26 +240,49 @@ class _PlayWidgetState extends State<PlayWidget> {
             height: 100,
             child: Row(
               children: [
-                TextButton(onPressed: playCrycle, child: Text('循环')),
+                SizedBox(width: 20, height: 20),
                 SizedBox(
                   width: 30,
                 ),
-                TextButton(onPressed: playPrevious, child: Text('上一个')),
                 SizedBox(
-                  width: 30,
-                ),
-                TextButton(onPressed: playPauseAndPlay, child: Text('播放')),
-                SizedBox(
-                  width: 30,
-                ),
-                TextButton(
-                  onPressed: playNex,
-                  child: Text('下一个'),
+                  width: 50,
+                  height: 50,
+                  child: TextButton(
+                      onPressed: playPrevious,
+                      child: Image.asset('images/play_previous.png')),
                 ),
                 SizedBox(
                   width: 30,
                 ),
-                TextButton(onPressed: playMusicList, child: Text('列表'))
+                SizedBox(
+                  width: 70,
+                  height: 70,
+                  child: TextButton(
+                      onPressed: playPauseAndPlay,
+                      child: Image.asset(PlayerManger().isPlaying
+                          ? 'images/play_play.png'
+                          : 'images/play_pause.png')),
+                ),
+                SizedBox(
+                  width: 30,
+                ),
+                SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: TextButton(
+                      onPressed: playNex,
+                      child: Image.asset('images/play_next.png')),
+                ),
+                SizedBox(
+                  width: 30,
+                ),
+                SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: TextButton(
+                      onPressed: playMusicList,
+                      child: Image.asset('images/play_list.png')),
+                ),
               ],
             ),
             bottom: 20,
