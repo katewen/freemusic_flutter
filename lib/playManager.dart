@@ -5,7 +5,7 @@ import 'networkManager.dart';
 class PlayerManger {
   List playMusicList;
   int playingIndex;
-  bool isPlaying;
+  bool isPlaying = false;
   static final PlayerManger _manger = new PlayerManger.internal();
 
   factory PlayerManger() => _manger;

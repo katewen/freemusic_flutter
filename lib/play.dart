@@ -31,6 +31,18 @@ class _PlayWidgetState extends State<PlayWidget> {
   @override
   void initState() {
     super.initState();
+    refreshMusicInfo();
+    PlayerManger().player.onPlayerCompletion.listen((event) {
+      playNex();
+    });
+  }
+
+  void refreshMusicInfo() {
+    artistStr = "";
+    musicName = "";
+    model = PlayerManger().isPlaying
+        ? PlayerManger().playMusicList[PlayerManger().playingIndex]
+        : null;
     if (model != null) {
       getPicUrl();
       for (var artist in model.artist) {
@@ -47,11 +59,9 @@ class _PlayWidgetState extends State<PlayWidget> {
     PlayerManger().player.onAudioPositionChanged.listen((event) {
       musicCurrentTime = transformToTime(event.inMilliseconds);
       currentTime = event.inMilliseconds;
-
-      setState(() {});
-    });
-    PlayerManger().player.onPlayerCompletion.listen((event) {
-      playNex();
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
@@ -94,7 +104,7 @@ class _PlayWidgetState extends State<PlayWidget> {
   void playMusicList() {}
 
   void refreshState() {
-    model = PlayerManger().playMusicList[PlayerManger().playingIndex];
+    refreshMusicInfo();
     setState(() {});
   }
 
