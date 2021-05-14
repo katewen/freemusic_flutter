@@ -154,9 +154,11 @@ class _PlayWidgetState extends State<PlayWidget> {
         });
     if (selectIndex != null && selectIndex != PlayerManger().playingIndex) {
       String musicUrl = await NetworkManager()
-          .requestMusicUrlWithId(PlayerManger().playMusicList[selectIndex]);
+          .requestMusicUrlWithId(PlayerManger().playMusicList[selectIndex].id);
+      model = PlayerManger().playMusicList[selectIndex];
       PlayerManger().reloadPlayDataWithUrl(musicUrl);
       PlayerManger().playingIndex = selectIndex;
+      refreshMusicInfo();
     }
   }
 
