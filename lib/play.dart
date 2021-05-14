@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +5,7 @@ import 'package:freemusic_flutter/musicModel.dart';
 import 'package:freemusic_flutter/networkManager.dart';
 import 'package:freemusic_flutter/playManager.dart';
 import 'dart:math' as math;
+import 'dart:ui';
 
 PlayWidget sharedPlay = PlayWidget();
 
@@ -137,14 +136,14 @@ class _PlayWidgetState extends State<PlayWidget> {
                     currentMusicName = currentModel.name;
                     return Align(
                       child: ListTile(
-                        title: Text(
-                          currentMusicName + ' - ' + currentArtists,
-                          textAlign: TextAlign.left,
-                        ),
-                        trailing: index == PlayerManger().playingIndex
-                            ? Image.asset('images/list_play.png')
-                            : null,
-                      ),
+                          title: Text(
+                            currentMusicName + ' - ' + currentArtists,
+                            textAlign: TextAlign.left,
+                          ),
+                          trailing: index == PlayerManger().playingIndex
+                              ? Image.asset('images/list_play.png')
+                              : null,
+                          onTap: () => Navigator.of(context).pop(index)),
                     );
                   },
                   itemCount: PlayerManger().playMusicList.length,
@@ -152,15 +151,13 @@ class _PlayWidgetState extends State<PlayWidget> {
               ],
             ),
           );
-        }),
-
-    if ((selectIndex != null) and (selectIndex != PlayerManger().playingIndex)) {
+        });
+    if (selectIndex != null && selectIndex != PlayerManger().playingIndex) {
       String musicUrl = await NetworkManager()
-                          .requestMusicUrlWithId(PlayerManger().playMusicList[selectIndex]);
+          .requestMusicUrlWithId(PlayerManger().playMusicList[selectIndex]);
       PlayerManger().reloadPlayDataWithUrl(musicUrl);
       PlayerManger().playingIndex = selectIndex;
     }
-
   }
 
   void refreshState() {
