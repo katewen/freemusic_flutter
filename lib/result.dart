@@ -37,7 +37,8 @@ class _SearchResultState extends State<SearchResult> {
     var list = await DataManager().queryAllTableFromDB();
     musicList = [];
     for (var map in list) {
-      if (map["name"] != "sqlite_sequence") {
+      if (map["name"] != "sqlite_sequence" &&
+          map["name"] != "android_metedata") {
         musicList.add(map);
       }
     }

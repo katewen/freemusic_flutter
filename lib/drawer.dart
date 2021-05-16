@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freemusic_flutter/about.dart';
 
 class MenuDrawer extends StatelessWidget {
   const MenuDrawer({
@@ -28,7 +29,7 @@ class MenuDrawer extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "聆听者",
+                    "享乐音乐",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   )
                 ],
@@ -40,6 +41,12 @@ class MenuDrawer extends StatelessWidget {
                   ListTile(
                     leading: const Icon(Icons.settings),
                     title: const Text('关于软件'),
+                    onTap: () {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return About();
+                      }));
+                    },
                   ),
                 ],
               ),

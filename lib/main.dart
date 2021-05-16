@@ -7,6 +7,7 @@ import 'package:freemusic_flutter/myList.dart';
 import 'package:freemusic_flutter/play.dart';
 import 'package:freemusic_flutter/search.dart';
 import 'package:freemusic_flutter/textButton.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   runApp(MyApp());
@@ -67,6 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: implement initState
     super.initState();
     queryAllTable();
+    Permission.storage.request();
   }
 
   void _incrementCounter() {
@@ -88,7 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
     var list = await DataManager().queryAllTableFromDB();
     _musicTableList = [];
     for (var map in list) {
-      if (map["name"] != "sqlite_sequence") {
+      if (map["name"] != "sqlite_sequence" &&
+          map["name"] != "android_metadata") {
         _musicTableList.add(map);
       }
     }
@@ -161,14 +164,14 @@ class _MyHomePageState extends State<MyHomePage> {
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.blue,
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          tooltip: "Menu",
-          onPressed: () {
-            // Navigator.push(context, MaterialPageRoute(builder: (context) {
-            //   return MenuDrawer();
-            // }));
-          },
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: Icon(Icons.menu),
+            tooltip: "Menu",
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
         ),
         actions: [
           IconButton(

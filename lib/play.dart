@@ -73,7 +73,9 @@ class _PlayWidgetState extends State<PlayWidget> {
     musicCurrentTime =
         transformToTime((await PlayerManger().player.getCurrentPosition()));
     currentTime = await PlayerManger().player.getCurrentPosition();
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   String transformToTime(int time) {
@@ -140,9 +142,18 @@ class _PlayWidgetState extends State<PlayWidget> {
                             currentMusicName + ' - ' + currentArtists,
                             textAlign: TextAlign.left,
                           ),
-                          trailing: index == PlayerManger().playingIndex
-                              ? Image.asset('images/list_play.png')
-                              : null,
+                          leading: index == PlayerManger().playingIndex
+                              ? SizedBox(
+                                  height: 25,
+                                  width: 25,
+                                  child: Image.asset('images/list_play.png'))
+                              : SizedBox(
+                                  width: 25,
+                                  height: 25,
+                                ),
+                          // trailing: index == PlayerManger().playingIndex
+                          //     ? Image.asset('images/list_play.png')
+                          //     : null,
                           onTap: () => Navigator.of(context).pop(index)),
                     );
                   },

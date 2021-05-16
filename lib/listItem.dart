@@ -48,6 +48,8 @@ class ListItem extends StatelessWidget {
               String musicUrl =
                   await NetworkManager().requestMusicUrlWithId(model.id);
               PlayerManger().reloadPlayDataWithUrl(musicUrl);
+              PlayerManger().playingIndex = 0;
+              PlayerManger().playMusicList = [model];
               sharedPlay.musicList = [model];
               sharedPlay.model = model;
             },
@@ -59,7 +61,9 @@ class ListItem extends StatelessWidget {
               padding: EdgeInsets.only(right: 5),
               child: Image.asset('images/list_download.png'),
             ),
-            onTap: onDownload,
+            onTap: () {
+              NetworkManager().downloadMusicWith(model);
+            },
           ),
           GestureDetector(
             child: Container(
