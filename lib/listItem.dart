@@ -4,6 +4,7 @@ import 'package:freemusic_flutter/musicModel.dart';
 import 'package:freemusic_flutter/networkManager.dart';
 import 'package:freemusic_flutter/play.dart';
 import 'package:freemusic_flutter/playManager.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ListItem extends StatelessWidget {
   ListItem({Key key, this.model}) : super(key: key);
@@ -52,6 +53,9 @@ class ListItem extends StatelessWidget {
               PlayerManger().playMusicList = [model];
               sharedPlay.musicList = [model];
               sharedPlay.model = model;
+              Fluttertoast.showToast(
+                msg: "正在播放" + name + artistStr,
+              );
             },
           ),
           GestureDetector(

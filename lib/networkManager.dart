@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:freemusic_flutter/musicModel.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class NetworkManager {
@@ -59,6 +60,10 @@ class NetworkManager {
 
   void downloadMusicWith(MusicModel model) async {
     bool status = await Permission.storage.isGranted;
+    if (!status) {
+      await Permission.storage.request();
+      status = await Permission.storage.isGranted;
+    }
     if (status) {
       Dio dio = Dio();
       //    dio.options.baseUrl = "https://123.sogou.com";
@@ -75,12 +80,21 @@ class NetworkManager {
       artistStr =
           artistStr.replaceRange(artistStr.length - 1, artistStr.length, '');
       name = model.name;
-      String fileName = name + " - " + artistStr;
+      String fileName = name + " - " + artistStr + ".mp3";
+      var path = Directory("storage/emulated/0/MyMusics");
+      path = await getExternalStorageDirectory();
+      path = Directory(path.path + "/DownloadedMusics");
+      if (!(await path.exists())) {
+        await path.create();
+      }
+      Fluttertoast.showToast(
+        msg: "正在下载歌曲",
+      );
       Response response =
-          await dio.download(musicUrl, "/storage/MyMusices/" + fileName);
+          await dio.download(musicUrl, path.path + "/" + fileName);
       if (response.statusCode == 200) {
         Fluttertoast.showToast(
-          msg: "正在下载歌曲",
+          msg: "已下载到" + path.path,
         );
       }
     }

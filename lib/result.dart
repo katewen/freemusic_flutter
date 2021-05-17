@@ -3,6 +3,7 @@ import 'package:freemusic_flutter/dataManager.dart';
 import 'package:freemusic_flutter/listItem.dart';
 import 'package:freemusic_flutter/musicModel.dart';
 import 'package:freemusic_flutter/networkManager.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SearchResult extends StatefulWidget {
   SearchResult({Key key, this.searchWord}) : super(key: key);
@@ -86,6 +87,9 @@ class _SearchResultState extends State<SearchResult> {
     if (selectIndex != null) {
       DataManager().insertModelToTable(
           resultList[musicIndex], musicList[selectIndex]['name']);
+      Fluttertoast.showToast(
+        msg: "添加到歌单成功",
+      );
     }
   }
 

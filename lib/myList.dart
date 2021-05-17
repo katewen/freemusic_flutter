@@ -8,6 +8,7 @@ import 'package:freemusic_flutter/playManager.dart';
 import 'networkManager.dart';
 import 'package:freemusic_flutter/play.dart';
 import 'package:freemusic_flutter/playManager.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class MyList extends StatefulWidget {
   MyList({Key key, this.listName}) : super(key: key);
@@ -67,6 +68,9 @@ class MyListState extends State<MyList> {
                       PlayerManger().playingIndex = index;
                       sharedPlay.musicList = musicList;
                       sharedPlay.model = musicList[index];
+                      Fluttertoast.showToast(
+                        msg: "正在播放" + listTitle,
+                      );
                     },
                   ));
             },
