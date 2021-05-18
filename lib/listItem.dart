@@ -54,7 +54,7 @@ class ListItem extends StatelessWidget {
               sharedPlay.musicList = [model];
               sharedPlay.model = model;
               Fluttertoast.showToast(
-                msg: "正在播放" + name + artistStr,
+                msg: "正在播放" + name + ' - ' + artistStr,
               );
             },
           ),
