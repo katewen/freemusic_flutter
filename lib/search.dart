@@ -7,6 +7,8 @@ import 'package:freemusic_flutter/result.dart';
 class SearchWidght extends StatelessWidget {
   TextEditingController _editingController = TextEditingController();
   List musicList;
+  bool isSource1Selected;
+  bool isSource2Selected;
   Future<void> _searchMusic(String musicName) async {
     // NetworkManager networkManager = new NetworkManager();
     // musicList =
@@ -59,7 +61,14 @@ class SearchWidght extends StatelessWidget {
                           return SearchResult(searchWord: content);
                         }));
                       }),
-                ))
+                )),
+            Row(
+              children: [
+                CheckboxListTile(value: isSource1Selected, onChanged: (bool newValue) {
+                  
+                },title: Text('源1'),selectedTileColor: Colors.blue,tileColor: Colors.grey,)
+              ],
+            )
           ],
         ),
       ),
