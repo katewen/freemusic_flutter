@@ -19,7 +19,7 @@ class DataManager {
 
   initDB() async {
     var dataBasePath = await getDatabasesPath();
-    String path = join(dataBasePath, 'xiangle.db');
+    String path = join(dataBasePath, 'xianglePlus.db');
     var db = await openDatabase(path, version: 1);
     return db;
   }
@@ -31,39 +31,41 @@ class DataManager {
   void createTableWithName(String tablename) async {
     var db = await database;
     await db.execute(
-        'create table $tablename(id INTEGER PRIMARY KEY AUTOINCREMENT,musicId TEXT,lyric_id TEXT,name TEXT,pic_id TEXT,url_id TEXT,source TEXT,album TEXT,artist TEXT)');
+        'create table $tablename(id INTEGER PRIMARY KEY AUTOINCREMENT,songid TEXT,type TEXT,link TEXT,author TEXT,title TEXT,lrc TEXT,url TEXT,pic TEXT)');
   }
-
   void insertModelToTable(MusicModel model, String tablename) async {
-    int musicId = model.id;
-    int lyricId = model.lyric_id;
-    String picId = model.pic_id;
-    int urlId = model.url_id;
-    String name = model.name;
-    String artistStr = '';
-    String source = model.source;
-    String album = model.album;
-    for (var artist in model.artist) {
-      artistStr = artistStr + artist + ',';
-    }
-    artistStr =
-        artistStr.replaceRange(artistStr.length - 1, artistStr.length, '');
+    String songid = model.songid;
+    String type = model.type;
+    String link = model.link;
+    String author = model.author;
+    String title = model.title;
+    String lrc = model.lrc;
+    String url = model.url;
+    String pic = model.pic;
+    // String artistStr = '';
+    // String source = model.source;
+    // String album = model.album;
+    // for (var artist in model.artist) {
+    //   artistStr = artistStr + artist + ',';
+    // }
+    // artistStr =
+    //     artistStr.replaceRange(artistStr.length - 1, artistStr.length, '');
 
     var db = await database;
     List<Map> result =
-        await db.query(tablename, where: 'musicId = ?', whereArgs: [musicId]);
+        await db.query(tablename, where: 'songid = ?', whereArgs: [songid]);
     if (result.isEmpty) {
       // db.insert(tablename,
       // 'INSERT INTO $tablename (musicId,lyric_id,name,pic_id,url_id,source,album,artist) VALUES ($musicId,$lyricId,$name,$picId,$urlId,$source,$album,$artistStr)');
       db.insert(tablename, {
-        'musicId': musicId,
-        'lyric_id': lyricId,
-        'name': name,
-        'pic_id': picId,
-        'url_id': urlId,
-        'source': source,
-        'album': album,
-        'artist': artistStr
+        'songid': songid,
+        'type': type,
+        'link': link,
+        'author': author,
+        'title': title,
+        'lrc': lrc,
+        'url': url,
+        'pic': pic
       });
       // db.rawInsert(
       // 'INSERT INTO $tablename (musicId,lyric_id,name,pic_id,url_id,source,album,artist) VALUES ($musicId,$lyricId,$name,$picId,$urlId,$source,$album,$artistStr)');
@@ -71,9 +73,14 @@ class DataManager {
   }
 
   void deleteModelFromTable(MusicModel model, String tableName) async {
-    int musicId = model.id;
+    String musicId = model.songid;
     var db = await database;
-    db.execute('DELETE FROM %@ where musicId=$musicId');
+    db.execute('DELETE FROM %@ where songid=$musicId');
+  }
+
+  void deleteMusicListFromData(String musicListName) async {
+    var db = await database;
+    db.execute('DROP TABLE $musicListName');
   }
 
   Future<List> queryAllModelFromTable(String tableName) async {

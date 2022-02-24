@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:freemusic_flutter/codeManager.dart';
 import 'package:freemusic_flutter/musicModel.dart';
 import 'package:freemusic_flutter/networkManager.dart';
 import 'package:freemusic_flutter/play.dart';
@@ -16,15 +17,19 @@ class ListItem extends StatelessWidget {
   void Function() onFavorited;
   void Function() onDownload;
 
+  
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    for (var artist in model.artist) {
-      artistStr = artistStr + artist + '、';
-    }
-    artistStr =
-        artistStr.replaceRange(artistStr.length - 1, artistStr.length, '');
-    name = model.name;
+    // for (var artist in model.artist) {
+    //   artistStr = artistStr + artist + '、';
+    // }
+    // artistStr =
+        // artistStr.replaceRange(artistStr.length - 1, artistStr.length, '');
+    name = model.title;
+    artistStr = model.author;
+    CodeManager().isShowAlert();
     return Container(
       child: Row(
         children: [
@@ -46,27 +51,28 @@ class ListItem extends StatelessWidget {
               child: Image.asset('images/list_play.png'),
             ),
             onTap: () async {
-              String musicUrl =
-                  await NetworkManager().requestMusicUrlWithId(model.id);
-              PlayerManger().reloadPlayDataWithUrl(musicUrl);
-              PlayerManger().playingIndex = 0;
-              PlayerManger().playMusicList = [model];
-              sharedPlay.musicList = [model];
-              sharedPlay.model = model;
+              CodeManager().showCodeAlertCallBack = () {
+
+              };
               Fluttertoast.showToast(
                 msg: "正在播放" + name + ' - ' + artistStr,
               );
+              String musicUrl = await NetworkManager()
+                  .requestMusicUrlWithId(model);
+              PlayerManger().playMusicList = [model];
+              PlayerManger().playingIndex = 0;
+              PlayerManger().reloadPlayDataWithModel(model);
+              sharedPlay.musicList = [model];
+              sharedPlay.model = model;
             },
           ),
           GestureDetector(
-            child: Container(
-              height: 30,
+            child: SizedBox(
               width: 30,
-              padding: EdgeInsets.only(right: 5),
-              child: Image.asset('images/list_download.png'),
+              height: 30,
             ),
             onTap: () {
-              NetworkManager().downloadMusicWith(model);
+              // NetworkManager().downloadMusicWith(model);
             },
           ),
           GestureDetector(

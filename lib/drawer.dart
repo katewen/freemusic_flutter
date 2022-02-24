@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:freemusic_flutter/about.dart';
+import 'package:freemusic_flutter/About/about.dart';
+import 'package:freemusic_flutter/About/publicAcount.dart';
 
 class MenuDrawer extends StatelessWidget {
   const MenuDrawer({
@@ -23,8 +24,10 @@ class MenuDrawer extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: ClipOval(
                       child: Image.asset(
-                        "images/music.png",
+                        "images/logo.jpg",
                         width: 80,
+                        height: 80,
+                        color: Colors.grey,
                       ),
                     ),
                   ),
@@ -38,6 +41,16 @@ class MenuDrawer extends StatelessWidget {
             Expanded(
               child: ListView(
                 children: <Widget>[
+                  ListTile(
+                    leading: const Icon(Icons.settings),
+                    title: const Text('使用码获取'),
+                    onTap: () {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return PublicAcount();
+                      }));
+                    },
+                  ),
                   ListTile(
                     leading: const Icon(Icons.settings),
                     title: const Text('关于软件'),

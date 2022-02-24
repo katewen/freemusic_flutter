@@ -1,13 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
-class About extends StatelessWidget {
+class PublicAcount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "关于我们",
+          "使用码",
           style: TextStyle(color: Colors.white),
         ),
       ),
@@ -17,25 +19,24 @@ class About extends StatelessWidget {
             SizedBox(
               height: 20,
             ),
-            Image.asset("images/music.png"),
+            Image(image: AssetImage("images/public.png")),
+            // Image.asset(
+            //   "images/public.png",
+            //   color: Colors.grey,
+            // ),
             SizedBox(height: 20),
             Text(
-              "享乐音乐",
+              "搞机分享汇",
               style: TextStyle(color: Colors.black, fontSize: 17),
             ),
             SizedBox(
               height: 20,
             ),
             Text(
-              "本软件仅供学习交流使用，请勿传播，如果内容侵犯了您的权益，请联系我们删除",
-              style: TextStyle(color: Colors.grey),
+              "本软件需要从该公众号回复’享乐‘获取使用码，使用码有效期48小时，失效后需要重新获取",
+              style: TextStyle(color: Colors.grey,fontSize: 14),
               textAlign: TextAlign.center,
             ),
-            Text(
-              "QQ：773522733",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
-            )
           ],
         ),
       ),

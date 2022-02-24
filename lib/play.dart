@@ -1,4 +1,5 @@
-import 'package:audioplayers/audioplayers.dart';
+
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:freemusic_flutter/musicModel.dart';
@@ -6,6 +7,10 @@ import 'package:freemusic_flutter/networkManager.dart';
 import 'package:freemusic_flutter/playManager.dart';
 import 'dart:math' as math;
 import 'dart:ui';
+import 'package:freemusic_flutter/main.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:freemusic_flutter/common.dart';
+import 'playManager.dart';
 
 PlayWidget sharedPlay = PlayWidget();
 
@@ -17,7 +22,7 @@ class PlayWidget extends StatefulWidget {
 }
 
 class _PlayWidgetState extends State<PlayWidget> {
-  String musicName = '测试音乐';
+  String musicName = '';
   String artistStr = '';
   List musicList = sharedPlay.musicList;
   MusicModel model = sharedPlay.model;
@@ -27,13 +32,17 @@ class _PlayWidgetState extends State<PlayWidget> {
 
   int totalTime = 0;
   int currentTime = 0;
+
   @override
   void initState() {
     super.initState();
     refreshMusicInfo();
-    PlayerManger().player.onPlayerCompletion.listen((event) {
-      playNex();
-    });
+    // PlayerManger().player.stop.listen((event){
+    //     if (PlayerManger().player.)
+    // });
+    // PlayerManger().player.onPlayerCompletion.listen((event) {
+    //   playNex();
+    // });
   }
 
   void refreshMusicInfo() {
@@ -41,41 +50,38 @@ class _PlayWidgetState extends State<PlayWidget> {
         ? PlayerManger().playMusicList[PlayerManger().playingIndex]
         : null;
     if (model != null) {
+      picUrl = model.pic;
       getPicUrl();
-      artistStr = "";
-      musicName = "";
-      for (var artist in model.artist) {
-        artistStr = artistStr + artist + ',';
-      }
-      artistStr =
-          artistStr.replaceRange(artistStr.length - 1, artistStr.length, '');
-      musicName = model.name;
+      artistStr = model.author;
+      musicName = model.title;
     }
     if (artistStr == null) {
       artistStr = '';
     }
-
-    PlayerManger().player.onAudioPositionChanged.listen((event) {
-      musicCurrentTime = transformToTime(event.inMilliseconds);
-      currentTime = event.inMilliseconds;
-      if (mounted) {
-        setState(() {});
-      }
+    setState(() {
+      
     });
+    // PlayerManger().player.durationStream.
+    // PlayerManger().player.onAudioPositionChanged.listen((event) {
+    //   musicCurrentTime = transformToTime(event.inMilliseconds);
+    //   currentTime = event.inMilliseconds;
+    //   if (mounted) {
+    //     setState(() {});
+    //   }
+    // });
   }
 
   void getPicUrl() async {
-    picUrl =
-        await NetworkManager().requestPicUrlWithId(int.parse(model.pic_id));
-    musicTotalTime =
-        transformToTime((await PlayerManger().player.getDuration()));
-    totalTime = await PlayerManger().player.getDuration();
-    musicCurrentTime =
-        transformToTime((await PlayerManger().player.getCurrentPosition()));
-    currentTime = await PlayerManger().player.getCurrentPosition();
-    if (mounted) {
-      setState(() {});
-    }
+    
+    // print(PlayerManger().player.duration);
+    // //musicTotalTime =
+    //     //transformToTime((PlayerManger().player.duration.inSeconds));
+    // //totalTime = PlayerManger().player.duration.inSeconds;
+    // musicCurrentTime =
+    //     transformToTime((PlayerManger().player.duration.inSeconds ));
+    // currentTime = PlayerManger().player.duration.inSeconds;
+    picUrl = model.pic;
+    setState(() {});
   }
 
   String transformToTime(int time) {
@@ -93,7 +99,10 @@ class _PlayWidgetState extends State<PlayWidget> {
   }
 
   void playPauseAndPlay() {
-    PlayerManger().playAndPause();
+    if (PlayerManger().isPlaying) 
+      PlayerManger().pause();
+    else
+      PlayerManger().play();
     refreshState();
   }
 
@@ -128,14 +137,14 @@ class _PlayWidgetState extends State<PlayWidget> {
                   itemBuilder: (context, index) {
                     MusicModel currentModel =
                         PlayerManger().playMusicList[index];
-                    String currentArtists = '';
+                    String currentArtists = currentModel.author;
                     String currentMusicName = '';
-                    for (var artist in currentModel.artist) {
-                      currentArtists = currentArtists + artist + '、';
-                    }
-                    currentArtists = currentArtists.replaceRange(
-                        currentArtists.length - 1, currentArtists.length, '');
-                    currentMusicName = currentModel.name;
+                    // for (var artist in currentModel.artist) {
+                    //   currentArtists = currentArtists + artist + '、';
+                    // }
+                    // currentArtists = currentArtists.replaceRange(
+                    //     currentArtists.length - 1, currentArtists.length, '');
+                    currentMusicName = currentModel.title;
                     return Align(
                       child: ListTile(
                           title: Text(
@@ -164,11 +173,11 @@ class _PlayWidgetState extends State<PlayWidget> {
           );
         });
     if (selectIndex != null && selectIndex != PlayerManger().playingIndex) {
-      String musicUrl = await NetworkManager()
-          .requestMusicUrlWithId(PlayerManger().playMusicList[selectIndex].id);
-      model = PlayerManger().playMusicList[selectIndex];
-      PlayerManger().reloadPlayDataWithUrl(musicUrl);
       PlayerManger().playingIndex = selectIndex;
+      model = PlayerManger().playMusicList[selectIndex];
+      String musicUrl = await NetworkManager().requestMusicUrlWithId(
+          PlayerManger().playMusicList[selectIndex]);
+      PlayerManger().reloadPlayDataWithIndex(selectIndex);
       refreshMusicInfo();
     }
   }
@@ -178,6 +187,23 @@ class _PlayWidgetState extends State<PlayWidget> {
     setState(() {});
   }
 
+  Stream<Duration> get _bufferedPositionStream => PlayerManger().audioHandler.playbackState
+      .map((state) => state.bufferedPosition)
+      .distinct();
+  Stream<bool> get _playbackStream => PlayerManger().audioHandler.playbackState
+      .map((state) => state.playing).distinct();
+
+  Stream<MediaItem> get _playingItemStream => PlayerManger().audioHandler.mediaItem.map((item) => item).distinct();
+
+  Stream<Duration> get _durationStream =>
+      PlayerManger().audioHandler.mediaItem.map((item) => item.duration).distinct();
+  Stream<PositionData> get _positionDataStream =>
+      Rx.combineLatest3<Duration, Duration, Duration, PositionData>(
+          AudioService.position,
+          _bufferedPositionStream,
+          _durationStream,
+          (position, bufferedPosition, duration) => PositionData(
+              position, bufferedPosition, duration ?? Duration.zero));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -190,62 +216,90 @@ class _PlayWidgetState extends State<PlayWidget> {
       body: Stack(
         alignment: Alignment.center,
         children: [
-          Positioned(
-            top: 20,
-            child: Text(
-              musicName,
-              style: TextStyle(fontSize: 18, color: Colors.black),
+          StreamBuilder<MediaItem>(
+              stream: _playingItemStream,
+              builder: (context, snapshot) {
+                final item = snapshot.data ?? null;
+                return Positioned(
+                          top: 20,
+                          child: Text(
+                            item != null ? item.title : "",
+                            style: TextStyle(fontSize: 20, color: Colors.black),
+                          ),
+                        );
+              }
+          ),
+          StreamBuilder<MediaItem>(
+              stream: _playingItemStream,
+              builder: (context, snapshot) {
+                final item = snapshot.data ?? null;
+                return Positioned(
+                          top: 60,
+                          child: Text(
+                            item != null ? item.artist : "",
+                            style: TextStyle(fontSize: 16, color: Colors.black),
+                          ),
+                        );
+              }
+          ),
+          StreamBuilder<MediaItem>(
+              stream: _playingItemStream,
+              builder: (context, snapshot) {
+                final item = snapshot.data ?? null;
+                return Positioned(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(150),
+                              color: Colors.grey,
+                              image: DecorationImage(
+                                  image: item != null
+                                      ? NetworkImage(item.artUri.toString())
+                                      : AssetImage('images/music.png'),
+                                      fit: BoxFit.fill
+                              )
+                            ),
+                          child: Transform.rotate(
+                            angle: 0.02,
+                          ),
+                        ),
+                        height: 300,
+                        width: 300,
+                        top: 110,
+                      );
+              }
+          ),
+          // Positioned(
+          //   child: Text(musicCurrentTime),
+          //   bottom: 114,
+          //   left: 10,
+          // ),
+          StreamBuilder<PositionData>(
+              stream: _positionDataStream,
+              builder: (context, snapshot) {
+                final positionData = snapshot.data ??
+                    PositionData(Duration.zero, Duration.zero, Duration.zero);
+                return Positioned(
+                  child: SeekBar(
+                            duration: positionData.duration,
+                            position: positionData.position,
+                            onChangeEnd: (newPosition) {
+                              PlayerManger().audioHandler.seek(newPosition);
+                            },
+                          ),
+                  bottom: 120,
+                  left: 50,
+                  right: 50,
+                );
+              },
             ),
-          ),
-          Positioned(
-            top: 60,
-            child: Text(
-              artistStr,
-              style: TextStyle(fontSize: 16, color: Colors.black),
-            ),
-          ),
-          Positioned(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(150),
-                  color: Colors.grey,
-                  image: DecorationImage(
-                      image: picUrl != ''
-                          ? NetworkImage(picUrl)
-                          : AssetImage('images/music.png'))),
-              child: Transform.rotate(
-                angle: 0.02,
-              ),
-            ),
-            height: 300,
-            width: 300,
-            top: 110,
-          ),
-          Positioned(
-            child: Text(musicCurrentTime),
-            bottom: 114,
-            left: 10,
-          ),
-          Positioned(
-            child: SizedBox(
-              height: 5,
-              child: LinearProgressIndicator(
-                backgroundColor: Colors.grey[200],
-                valueColor: AlwaysStoppedAnimation(Colors.blue),
-                value: totalTime == 0 ? 0 : currentTime / totalTime,
-              ),
-            ),
-            bottom: 120,
-            left: 50,
-            right: 50,
-          ),
-          Positioned(
-              child: Text(
-                musicTotalTime,
-                textDirection: TextDirection.rtl,
-              ),
-              right: 10,
-              bottom: 114),
+          
+          // Positioned(
+          //     child: Text(
+          //       musicTotalTime,
+          //       textDirection: TextDirection.rtl,
+          //     ),
+          //     right: 10,
+          //     bottom: 114),
           Positioned(
             height: 100,
             child: Row(
@@ -264,14 +318,20 @@ class _PlayWidgetState extends State<PlayWidget> {
                 SizedBox(
                   width: 30,
                 ),
-                SizedBox(
-                  width: 70,
-                  height: 70,
-                  child: TextButton(
-                      onPressed: playPauseAndPlay,
-                      child: Image.asset(PlayerManger().isPlaying
-                          ? 'images/play_play.png'
-                          : 'images/play_pause.png')),
+                StreamBuilder<bool>(
+                  stream: _playbackStream,
+                  builder: (context, snapshot) {
+                    final playing = snapshot.data ?? false;
+                    return SizedBox(
+                        width: 70,
+                        height: 70,
+                        child: TextButton(
+                            onPressed: playPauseAndPlay,
+                            child: Image.asset(playing
+                                ? 'images/play_play.png'
+                                : 'images/play_pause.png')),
+                      );
+                  },
                 ),
                 SizedBox(
                   width: 30,

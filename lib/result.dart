@@ -6,8 +6,9 @@ import 'package:freemusic_flutter/networkManager.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class SearchResult extends StatefulWidget {
-  SearchResult({Key key, this.searchWord}) : super(key: key);
+  SearchResult({Key key, this.searchWord, this.source}) : super(key: key);
   String searchWord;
+  String source;
 
   _SearchResultState createState() => _SearchResultState();
 }
@@ -24,8 +25,8 @@ class _SearchResultState extends State<SearchResult> {
 
   Future<void> _requestResultList() async {
     NetworkManager networkManager = new NetworkManager();
-    Future<List> modelList =
-        networkManager.requestListWithName(widget.searchWord, pages);
+    Future<List> modelList = networkManager.requestListWithName(
+        widget.searchWord, pages, widget.source);
     for (var json in await modelList) {
       MusicModel model = MusicModel.fromJson(json);
       resultList.insert(resultList.length, model);
